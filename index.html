@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Address J1g</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 5px;
+    }
+    input[type="number"] {
+      width: 100px;
+      padding: 5px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      margin-top: 20px;
+    }
+    #downloadBtn {
+      margin-top: 10px;
+    }
+    #clearBtn {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Address Jig</h1>
+  <label for="address">Enter the address:</label>
+  <input type="text" id="address">
+  <label for="numVariations">Number of Variations:</label>
+  <input type="number" id="numVariations" min="1" value="5">
+  <button id="generateBtn">Generate Variations</button>
+  <div id="result"></div>
+  <button id="clearBtn">Clear List</button>
+  <a id="downloadBtn" href="#" download="nike_jigs.txt" style="display: none;">Download Variations</a>
+
+  <script>
+    function generateRandomCharacters(length) {
+      const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+      }
+      return result;
+    }
+
+    function generateAddressVariations(address, numVariations) {
+      const variations = [];
+
+      variations.push(address);
+
+      for (let i = 0; i < numVariations - 1; i++) {
+        const randomCharacters = generateRandomCharacters(Math.floor(Math.random() * 3) + 1);
+        let variation = '';
+
+        const parts = address.split(' ');
+        const randomOrder = [...parts];
+        randomOrder.sort(() => Math.random() - 0.5);
+
+        for (let j = 0; j < randomOrder.length; j++) {
+          variation += randomOrder[j] + ' ';
+        }
+
+        variation += randomCharacters;
+
+        if (!variations.includes(variation)) {
+          variations.push(variation);
+        }
+      }
+
+      return variations;
+    }
+
+    function generateVariations() {
+      const addressInput = document.getElementById('address');
+      const numVariationsInput = document.getElementById('numVariations');
+      const address = addressInput.value.trim();
+      const numVariations = parseInt(numVariationsInput.value.trim());
+      const resultContainer = document.getElementById('result');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      if (address === '') {
+        resultContainer.innerHTML = 'Please enter an address.';
+        downloadBtn.style.display = 'none';
+        return;
+      }
+
+      if (isNaN(numVariations) || numVariations <= 0) {
+        resultContainer.innerHTML = 'Please enter a valid number of variations.';
+        downloadBtn.style.display = 'none';
+        return;
+      }
+
+      const variations = generateAddressVariations(address, numVariations);
+      const variationsList = variations.map((variation) => `<li>${variation}</li>`).join('');
+
+      resultContainer.innerHTML = `<ul style="list-style-type: disc; margin-left: 20px;">${variationsList}</ul>`;
+      downloadBtn.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(variations.join('\n'));
+      downloadBtn.style.display = 'inline-block';
+    }
+
+    function clearList() {
+      const resultContainer = document.getElementById('result');
+      const downloadBtn = document.getElementById('downloadBtn');
+      resultContainer.innerHTML = '';
+      downloadBtn.style.display = 'none';
+    }
+
+    const generateBtn = document.getElementById('generateBtn');
+    generateBtn.addEventListener('click', generateVariations);
+
+    const clearBtn = document.getElementById('clearBtn');
+    clearBtn.addEventListener('click', clearList);
+  </script>
+</body>
+</html>
